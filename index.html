@@ -271,7 +271,7 @@ function parseCard(text){const m=text.match(/FABRIC_CARD:(\{[\s\S]*?\})/);if(!m)
 function cleanText(text){return text.replace(/FABRIC_CARD:[\s\S]*$/,'').trim();}
 
 async function callAPI(messages){
-  const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages})});
+  const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:SYS,messages})});
   const data=await r.json();
   return data.content?.[0]?.text||null;
 }
