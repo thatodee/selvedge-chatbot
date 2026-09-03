@@ -16,12 +16,13 @@
   .msg-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:4px}
   .msg-row.user{flex-direction:row-reverse;margin-left:60px}
   .msg-row.bot{margin-right:60px}
-  .msg-dot{min-width:4px;width:4px;height:4px;border-radius:50%;margin-top:8px;background:var(--mid)}
+  .msg-dot{min-width:4px;width:4px;height:4px;border-radius:50%;margin-top:9px;background:var(--mid)}
   .msg-row.user .msg-dot{background:var(--black)}
-  .msg-text{font-size:14px;line-height:1.5;color:var(--black);white-space:pre-wrap}
+  .msg-mark{min-width:14px;font-family:var(--serif);font-weight:900;font-size:13px;line-height:1.6;color:var(--black)}
+  .msg-text{font-size:15px;line-height:1.6;color:var(--black);white-space:pre-wrap}
   .msg-row.user .msg-text{text-align:right}
-.msg-row.bot .msg-text{color:var(--black)}
- .msg-row.error .msg-text{color:#b00020;font-size:12px;font-family:ui-monospace,monospace}
+  .msg-row.bot .msg-text{color:var(--black)}
+  .msg-row.error .msg-text{color:#b00020;font-size:12px;font-family:ui-monospace,monospace}
   .input-area{border-top:2px solid var(--black);padding:16px 28px;display:flex;gap:12px}
   .input-field{flex:1;border:1px solid var(--black);padding:12px;font-family:var(--sans);font-size:14px}
   .input-field:focus{outline:none;background:var(--off)}
@@ -190,12 +191,21 @@ const sendEl = document.getElementById("send");
 function addMsg(role, text) {
   const row = document.createElement("div");
   row.className = "msg-row " + role;
-  const dot = document.createElement("div");
-  dot.className = "msg-dot";
+
+  let mark;
+  if (role === "bot") {
+    mark = document.createElement("div");
+    mark.className = "msg-mark";
+    mark.textContent = "F";
+  } else {
+    mark = document.createElement("div");
+    mark.className = "msg-dot";
+  }
+
   const body = document.createElement("div");
   body.className = "msg-text";
   body.textContent = text;
-  row.appendChild(dot);
+  row.appendChild(mark);
   row.appendChild(body);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -214,11 +224,21 @@ async function callAPI(messages) {
   });
 
   const raw = await response.text();
+
+  if (!raw.trim()) {
+    throw new Error(
+      "Empty response. HTTP status " + response.status + " " + response.statusText +
+      ". (502 or 503 means the server crashed or restarted on this request. 504 means it timed out.)"
+    );
+  }
+
   let data;
   try {
     data = JSON.parse(raw);
   } catch (e) {
-    throw new Error("Server did not return JSON. It said: " + raw.slice(0, 300));
+    throw new Error(
+      "Not JSON. HTTP status " + response.status + ". Server said: " + raw.slice(0, 300)
+    );
   }
 
   if (!response.ok) {
