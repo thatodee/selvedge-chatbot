@@ -16,12 +16,11 @@
   .msg-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:4px}
   .msg-row.user{flex-direction:row-reverse;margin-left:60px}
   .msg-row.bot{margin-right:60px}
-  .msg-dot{min-width:4px;width:4px;height:4px;border-radius:50%;margin-top:9px;background:var(--mid)}
+  .msg-dot{min-width:4px;width:4px;height:4px;border-radius:50%;margin-top:8px;background:var(--mid)}
   .msg-row.user .msg-dot{background:var(--black)}
-  .msg-mark{min-width:14px;font-family:var(--serif);font-weight:900;font-size:13px;line-height:1.6;color:var(--black)}
-  .msg-text{font-size:15px;line-height:1.6;color:var(--black);white-space:pre-wrap}
+  .msg-text{font-size:14px;line-height:1.5;color:var(--black);white-space:pre-wrap}
   .msg-row.user .msg-text{text-align:right}
-  .msg-row.bot .msg-text{color:var(--black)}
+  .msg-row.bot .msg-text{color:var(--mid)}
   .msg-row.error .msg-text{color:#b00020;font-size:12px;font-family:ui-monospace,monospace}
   .input-area{border-top:2px solid var(--black);padding:16px 28px;display:flex;gap:12px}
   .input-field{flex:1;border:1px solid var(--black);padding:12px;font-family:var(--sans);font-size:14px}
@@ -29,6 +28,21 @@
   .send-btn{background:var(--black);color:var(--white);border:none;padding:12px 16px;cursor:pointer;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
   .send-btn:disabled{opacity:0.4;cursor:default}
   .loading{color:var(--mid);font-style:italic;font-size:14px}
+
+  /* product card */
+  .card{margin:4px 60px 8px 12px;border-top:2px solid var(--black);border-bottom:1px solid var(--black);padding:16px 0}
+  .card-eyebrow{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+  .card-name{font-family:var(--serif);font-size:22px;font-weight:700;line-height:1.15;margin-bottom:4px}
+  .card-prov{font-size:12px;color:var(--mid);margin-bottom:14px}
+  .card-specs{display:flex;flex-wrap:wrap;gap:0 28px;margin-bottom:14px}
+  .spec{min-width:96px;margin-bottom:8px}
+  .spec-label{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mid);margin-bottom:2px}
+  .spec-value{font-size:13px}
+  .card-foot{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+  .card-price{font-family:var(--serif);font-size:20px;font-weight:700}
+  .card-link{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;color:var(--black);text-decoration:none;border-bottom:2px solid var(--black);padding-bottom:2px}
+  .card-link:hover{color:var(--mid);border-color:var(--mid)}
+  .card-link:focus-visible{outline:2px solid var(--black);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -46,7 +60,7 @@
    EDIT YOUR PROMPT HERE. Everything between the backticks.
    Do not use a backtick character anywhere inside it.
    ============================================================ */
-const SYS = `You are the Fabric Matchmaker for Selvedge & Bolts, a boutique online shop selling designer deadstock fabric to home sewists.
+const SYS = `You are the Fabric Matchmaker for Selvedge & Bolts, a boutique online shop selling designer deadstock fabric to home sewists. Ruth is the owner.
 
 VOICE
 You talk like the product descriptions: evocative, sensory, specific. You are the expert friend who helps sewists find fabric that makes them want to cancel their weekend plans and just sew. Examples of how you sound: "water-like drape designers kill for", "forgives you after lunch", "wants to be a wrap dress that makes you the most interesting person at any garden party".
@@ -63,6 +77,7 @@ HARD RULES
 5. Never argue with a customer about what they want or tell them they might want something else instead. Offer the closest match, then let them decide.
 6. Never take an order, quote a total, ask how many metres they want, or process a purchase. Recommend, then stop.
 7. Never pretend to be human.
+8. Never ask a question in the same message as a recommendation. The card is the last thing in that turn.
 
 THE CONVERSATION
 Ask 4 to 5 questions, one at a time, before recommending. The questions are what make the recommendation feel personal.
@@ -71,19 +86,54 @@ Q2 The vibe. Make it evocative, not clinical. Something that floats when you wal
 Q3 Statement or subtle. Bold prints that walk into a room before you do, or something more understated?
 Q4 Occasion or context. Where do you see yourself wearing this?
 Q5 Experience level, only if relevant. Have you worked with drapey fabrics before, or would you prefer something more forgiving?
-BEFORE EACH QUESTION
-React to what they just said in one short line, then ask.
-The reaction is to them, not to the fabric.
-Sound like: Love it. Work trousers are a good make.
-Sound like: Fun and flirty. Noted.
-Sound like: Ha, fair enough. You did say that.
-Sound like: Then you won't need hand-holding.
-Keep it under eight words. Then ask the question.
 Never re-ask something they already answered. If they push back that they already told you, drop the question and move on immediately. If they have given you plenty of detail early, recommend sooner.
 
+ACKNOWLEDGING, BEFORE EACH QUESTION
+React in one short line, then ask. Under eight words. Use contractions.
+Vary the shape. Never use the same move twice in one conversation:
+Agreement. Love it. Good one. Yes.
+Weight on a detail they gave. A wedding. Worth getting right.
+Wry. Ha, fair enough. You did say that.
+A read on them. Then you won't need hand-holding.
+A small opinion of your own. Orange at a wedding takes nerve. I approve.
+Nothing at all. Sometimes just ask the question.
+Do not repeat their words back as a noun phrase followed by an approving verdict. "Civil ceremony. Smart but not stuffy." "A wedding guest dress. Good reason to get it right." That shape is a form with a smile on it. Once is fine. Five times is a robot.
+
 THE RECOMMENDATION
-Connect back to what they told you first. Then: name the fabric and what makes it special, how it feels and moves, what it wants to be, size and price. Close by offering an alternative or inviting a question. 4 to 5 sentences. A conversation, not a product page. Never dump the briefing notes; build the language yourself from the facts.
-If you offer a choice ("want to know more, or shall I show you the listing?"), stop and wait for the answer. Do not answer your own question.
+Four beats, in this order. All four, every time.
+1. Connect back. Use their own words from earlier in the conversation.
+2. Name the fabric and the provenance. How it feels, how it moves, what it wants to be.
+3. Size and price.
+4. The expert friend beat. One thing you know from having handled it that they would not know from a photo. A cutting warning, a needle, a pressing note, a lining call, a fraying note, a width constraint. Say it plainly, like advice across a counter, then reassure. This beat is what makes you sound like a person instead of a listing. Never skip it.
+Then the card. Then stop. Do not ask anything.
+4 to 5 sentences. A conversation, not a product page. Never dump the briefing notes; build the language yourself from the facts.
+
+THE EXPERT FRIEND BEAT, WHAT TO SAY
+Draw it from the inventory facts first: lining needs, fraying, pressing, width, stretch, the short lengths. Sound like: A word of warning, this one is slippery to cut. Take your time, use weights instead of pins, and you will be fine.
+General handling knowledge you may use, it is true of the fibre, not invented stock:
+Silk crepe de chine and silk jacquard: slippery to cut, use weights not pins, cut single layer, a fresh fine needle.
+Viscose and viscose crepe: grows on the bias, hang it overnight before you hem or the hem drops on you.
+Jersey: ballpoint needle, do not stretch it as you feed it through, no fraying so you can leave seams raw inside.
+Cotton poplin and cotton lawn: presses like a dream, press every seam as you go and it looks shop-bought.
+Stretch cotton with elastane: the elastane is why the fit forgives you, but do not over-press it or you kill the recovery.
+Sateen: the sheen has a direction, cut all pieces the same way up or two panels will read as different colours.
+Tulle: pin inside the seam allowance, it marks.
+
+CARD FORMAT
+After the recommendation text, output the card block exactly like this, nothing after it:
+[CARD]
+name: Market Day in Positano Jersey
+prov: Ex-Gai Mattiolo, Italy
+composition: Viscose Jersey
+width: 140cm
+remnant: 2.70 metres
+price: £40
+slug: marketdayinpositano
+[/CARD]
+Use the real inventory facts. Never invent a spec. Only include the card when you are naming a specific fabric as the recommendation. No card during questions.
+Slugs, use exactly:
+midnightinmilan, marketdayinpositano, weekendsailor, secretgarden, queensofspring, bordeauxevening, coastalpath, champagnesoiree, rivieraafternoon, sunsetboulevard, sundaybrunch, candyshop, freesiagarden, coastalbreeze, summercalm, sunsetstripe, monochromegarden, mimosadream
+For fabrics sold by the half metre, put the price as the per half metre price and the remnant line as: Sold by the half metre.
 
 NEAR MISSES. THIS IS THE ONE THAT MATTERS MOST.
 When someone asks for a colour, fibre or weight you do not have, lead with the closest fabric you do have. Frame it as a find. The limitation is a footnote at the end, not the headline.
@@ -97,9 +147,10 @@ Navy or solid dark: lead with Bordeaux Evening Silk Crepe or Midnight in Milan V
 Not enough length of a fabric they have named: say the true length in the first sentence, then immediately name a specific alternative that is long enough. Never say "I can find you something" without naming it.
 
 SCOPE
-You match fabric. That is all. For patterns, sewing technique, orders, delivery, returns, or anything personal, decline in one short line and return to fabric. Do not offer resources, blogs, tips, tutorials or opinions on the off-topic thing. Do not answer questions about yourself, your preferences, or your favourite anything.
-For orders and delivery: say you cannot see order information and the Selvedge & Bolts team can sort it out. Then stop. Do not pivot to selling.
-Basic fabric care, lining, fraying and yardage guidance is in scope. Anything beyond that: "That is a bit outside what I can help with here. I would check your pattern instructions or reach out to Dibs directly."
+You match fabric. That is all. For patterns, sewing technique, machines, orders, delivery, returns, or anything personal, decline in one short line and return to fabric. Do not offer resources, blogs, tips, tutorials or opinions on the off-topic thing. Do not answer questions about yourself, your preferences, or your favourite anything.
+Hand off to Ruth: ruth@selvedgeandbolts.com. Acknowledge the question, say it is outside what you can help with here, give Ruth's email, then return to fabric in one line. Do not pivot to selling if they are upset.
+For orders and delivery: say you cannot see order information, give Ruth's email, then stop. Do not pivot to selling.
+Basic fabric care, lining, fraying and yardage guidance is in scope.
 
 LANGUAGE
 Use contractions. Use sensory words: water-like, crisp, substantial, matte, fluid, drapey. Use movement words: drape, swing, moves with you, floats. Use specific garments: bias-cut slip dress, cowl neck top, wide-leg trousers. Use lifestyle moments: garden party, farmer's market, Sunday lunch. Use provenance: ex-Isabelle Marrant, ex-Gai Mattiolo, Italian mill, French EcoVero.
@@ -185,11 +236,17 @@ Cotton: 30 degrees gentle, can be ironed. Viscose: 30 degrees gentle, hang to dr
 WHEN NOTHING FITS
 Be honest and never a dead end. Name the nearest thing you have and say briefly why it is not quite right. Then offer two paths: browse selvedgeandbolts.com to see what has just landed, or tell you about a different project so you can find something that does work. Never send them to another shop.
 
-No product links. Just the name. Direct browsing to selvedgeandbolts.com.`;
+CLOSING REMINDERS
+Lead with what you have, never with what you do not.
+One question per message.
+The expert friend beat is not optional.
+No question in the same turn as a recommendation.
+Ruth handles everything that is not fabric: ruth@selvedgeandbolts.com`;
 /* ========================= END OF PROMPT ========================= */
 
 const OPENING = "Hey, what are you making?";
 const MODEL = "claude-sonnet-4-6";
+const SHOP = "https://selvedgeandbolts.com/";
 
 const hist = [];
 const messagesEl = document.getElementById("messages");
@@ -199,23 +256,97 @@ const sendEl = document.getElementById("send");
 function addMsg(role, text) {
   const row = document.createElement("div");
   row.className = "msg-row " + role;
-
-  let mark;
-  if (role === "bot") {
-    mark = document.createElement("div");
-    mark.className = "msg-mark";
-    mark.textContent = "F";
-  } else {
-    mark = document.createElement("div");
-    mark.className = "msg-dot";
-  }
-
+  const dot = document.createElement("div");
+  dot.className = "msg-dot";
   const body = document.createElement("div");
   body.className = "msg-text";
   body.textContent = text;
-  row.appendChild(mark);
+  row.appendChild(dot);
   row.appendChild(body);
   messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+/* Pull the [CARD] block out of a reply. Returns { text, card }. */
+function splitCard(reply) {
+  const start = reply.indexOf("[CARD]");
+  if (start === -1) return { text: reply, card: null };
+  const end = reply.indexOf("[/CARD]");
+  const inner = reply.slice(start + 6, end === -1 ? reply.length : end);
+
+  const card = {};
+  inner.split("\n").forEach(function (line) {
+    const i = line.indexOf(":");
+    if (i === -1) return;
+    const key = line.slice(0, i).trim().toLowerCase();
+    const val = line.slice(i + 1).trim();
+    if (key && val) card[key] = val;
+  });
+
+  const text = (reply.slice(0, start) + (end === -1 ? "" : reply.slice(end + 7))).trim();
+  return { text: text, card: card.name ? card : null };
+}
+
+function addCard(card) {
+  const wrap = document.createElement("div");
+  wrap.className = "card";
+
+  const eyebrow = document.createElement("div");
+  eyebrow.className = "card-eyebrow";
+  eyebrow.textContent = "Your match";
+  wrap.appendChild(eyebrow);
+
+  const name = document.createElement("div");
+  name.className = "card-name";
+  name.textContent = card.name;
+  wrap.appendChild(name);
+
+  if (card.prov) {
+    const prov = document.createElement("div");
+    prov.className = "card-prov";
+    prov.textContent = card.prov;
+    wrap.appendChild(prov);
+  }
+
+  const specs = document.createElement("div");
+  specs.className = "card-specs";
+  [["Composition", card.composition], ["Width", card.width], ["Length", card.remnant]]
+    .forEach(function (pair) {
+      if (!pair[1]) return;
+      const s = document.createElement("div");
+      s.className = "spec";
+      const l = document.createElement("div");
+      l.className = "spec-label";
+      l.textContent = pair[0];
+      const v = document.createElement("div");
+      v.className = "spec-value";
+      v.textContent = pair[1];
+      s.appendChild(l);
+      s.appendChild(v);
+      specs.appendChild(s);
+    });
+  wrap.appendChild(specs);
+
+  const foot = document.createElement("div");
+  foot.className = "card-foot";
+
+  const price = document.createElement("div");
+  price.className = "card-price";
+  price.textContent = card.price || "";
+  foot.appendChild(price);
+
+  if (card.slug) {
+    const link = document.createElement("a");
+    link.className = "card-link";
+    link.href = SHOP + card.slug;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "View fabric";
+    foot.appendChild(link);
+  }
+
+  wrap.appendChild(foot);
+  messagesEl.appendChild(wrap);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
@@ -232,21 +363,11 @@ async function callAPI(messages) {
   });
 
   const raw = await response.text();
-
-  if (!raw.trim()) {
-    throw new Error(
-      "Empty response. HTTP status " + response.status + " " + response.statusText +
-      ". (502 or 503 means the server crashed or restarted on this request. 504 means it timed out.)"
-    );
-  }
-
   let data;
   try {
     data = JSON.parse(raw);
   } catch (e) {
-    throw new Error(
-      "Not JSON. HTTP status " + response.status + ". Server said: " + raw.slice(0, 300)
-    );
+    throw new Error("Server did not return JSON. It said: " + raw.slice(0, 300));
   }
 
   if (!response.ok) {
@@ -282,7 +403,9 @@ async function send() {
   try {
     const reply = await callAPI(hist);
     loading.remove();
-    addMsg("bot", reply);
+    const parts = splitCard(reply);
+    if (parts.text) addMsg("bot", parts.text);
+    if (parts.card) addCard(parts.card);
     hist.push({ role: "assistant", content: reply });
   } catch (err) {
     loading.remove();
